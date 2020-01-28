@@ -21,6 +21,7 @@ class CreateProductsTable extends Migration
             $table->integer('stock')->nullable()->default(0);
             $table->integer('discount')->nullable()->default(0);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
