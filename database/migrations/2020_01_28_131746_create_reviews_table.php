@@ -15,7 +15,19 @@ class CreateReviewsTable extends Migration
     {
         Schema::create('reviews', function (Blueprint $table) {
             $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id');
+            $table->unsignedBigInteger('product_id');
+            $table->text('review');
+            $table->integer('start');
             $table->timestamps();
+
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
+
+            $table->foreign('product_id')
+                ->references('id')->on('products')
+                ->onDelete('cascade');
         });
     }
 
@@ -26,6 +38,9 @@ class CreateReviewsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('reviews');
+        Schema::table('reviews', function (Blueprint $table) {
+            $table->dropForeign(['user_id', 'product_id']);
+            Schema::dropIfExists('reviews');
+        });
     }
 }
