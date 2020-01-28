@@ -5,18 +5,18 @@ namespace App\Http\Controllers;
 use App\Model\Product;
 use Illuminate\Http\Request;
 use App\Http\Resources\Product\ProductResource;
+use App\Http\Resources\Product\ProductCollection;
 
 class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return ProductCollection|\Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
     public function index()
     {
-        //
-        return Product::all();
+        return new ProductCollection(Product::all());
     }
 
     /**
