@@ -20,8 +20,12 @@ class CreateProductsTable extends Migration
             $table->integer('price')->nullable()->default(0);
             $table->integer('stock')->nullable()->default(0);
             $table->integer('discount')->nullable()->default(0);
+            $table->unsignedBigInteger('user_id');
             $table->timestamps();
             $table->softDeletes();
+            $table->foreign('user_id')
+                ->references('id')->on('users')
+                ->onDelete('cascade');
         });
     }
 
@@ -32,6 +36,9 @@ class CreateProductsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('products');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropForeign(['user_id']);
+            Schema::dropIfExists('products');
+        });
     }
 }

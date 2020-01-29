@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Model\Product;
 use http\Env\Response;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use App\Exceptions\ProductNotBelongsToUser;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\Product\ProductResource;
 use App\Http\Resources\Product\ProductCollection;
@@ -43,8 +45,6 @@ class ProductController extends Controller
      */
     public function store(ProductRequest $request)
     {
-        //
-
         $validated = $request->validated();
         $product = new Product;
         $product->name = $request->name;
@@ -52,6 +52,7 @@ class ProductController extends Controller
         $product->stock = $request->stock;
         $product->price = $request->price;
         $product->discount = $request->discount;
+        $product->user_id = Auth::id();
         $product->save();
         return new ProductResource($product);
     }
@@ -82,16 +83,19 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Model\Product  $product
+     * @param \Illuminate\Http\Request $request
+     * @param \App\Model\Product $product
      * @return ProductResource
+     * @throws ProductNotBelongsToUser
      */
     public function update(Request $request, Product $product)
     {
+        $this->productUserCheck($product);
         if ($request->has('description')){
             $request['detail'] = $request->description;
             unset($request['description']);
         }
+        $request['user_id'] = Auth::id();
         $product->update($request->all());
         return new ProductResource($product);
     }
@@ -106,7 +110,15 @@ class ProductController extends Controller
     public function destroy(Product $product)
     {
         //
+        $this->productUserCheck($product);
         $product->delete();
         return $product;
+    }
+
+    public function productUserCheck(Product $product){
+        if (Auth::id() !== $product->user_id){
+            echo "ko trung";
+            return;
+        }
     }
 }
