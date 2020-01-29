@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Model\Product;
+use http\Env\Response;
 use Illuminate\Http\Request;
 use App\Http\Requests\ProductRequest;
 use App\Http\Resources\Product\ProductResource;
@@ -83,7 +84,7 @@ class ProductController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Model\Product  $product
-     * @return \Illuminate\Http\Response
+     * @return ProductResource
      */
     public function update(Request $request, Product $product)
     {
@@ -98,11 +99,14 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Model\Product  $product
-     * @return \Illuminate\Http\Response
+     * @param \App\Model\Product $product
+     * @return Product
+     * @throws \Exception
      */
     public function destroy(Product $product)
     {
         //
+        $product->delete();
+        return $product;
     }
 }
