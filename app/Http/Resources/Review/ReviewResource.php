@@ -14,12 +14,13 @@ class ReviewResource extends JsonResource
      */
     public function toArray($request)
     {
-        return $this->map(function($product) {
+        return $this->map(function($review) {
             return [
-                'user_name' => $product->user->name,
-                'product_name' => $product->product->name,
-                'body' => $product->review,
-                'star' => $product->star,
+                'id' => $review->id,
+                'user_name' => $review->user->name,
+                'product_name' => $review->product->name,
+                'review' => $review->review,
+                'star' => $review->star,
             ];
         });
     }

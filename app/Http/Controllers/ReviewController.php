@@ -2,13 +2,23 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Review\ReviewResource;
 use App\Model\Product;
 use App\Model\Review;
 use Illuminate\Http\Request;
+use App\Http\Requests\ReviewProduct;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\Review\ReviewResource;
 
 class ReviewController extends Controller
 {
+    protected $user;
+    public function __construct()
+    {
+        $this->middleware('auth:api')->except(['index']);
+        $this->user = Auth::user();
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -34,11 +44,16 @@ class ReviewController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return ReviewResource
      */
-    public function store(Request $request)
+    public function store(ReviewProduct $request, Product $product)
     {
-        //
+        $validated = $request->validated();
+        $request['user_id'] = $this->user->id;
+        $request['product_id'] = $product->id;
+        $review = new Review($request->all());
+        $product->reviews()->save($review);
+        return new ReviewResource($product->reviews);
     }
 
     /**
@@ -47,9 +62,9 @@ class ReviewController extends Controller
      * @param  \App\Model\Review  $review
      * @return \Illuminate\Http\Response
      */
-    public function show(Review $review)
+    public function show(Product $product, Review $review)
     {
-        //
+        return $review;
     }
 
     /**
@@ -61,6 +76,7 @@ class ReviewController extends Controller
     public function edit(Review $review)
     {
         //
+
     }
 
     /**
@@ -68,21 +84,24 @@ class ReviewController extends Controller
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Model\Review  $review
-     * @return \Illuminate\Http\Response
+     * @return ReviewResource
      */
-    public function update(Request $request, Review $review)
+    public function update(Request $request, Product $product, Review $review)
     {
         //
+        $review->update($request->all());
+        return new ReviewResource($product->reviews);
     }
 
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Model\Review  $review
-     * @return \Illuminate\Http\Response
+     * @return ReviewResource
      */
-    public function destroy(Review $review)
+    public function destroy(Product $product, Review $review)
     {
-        //
+        $review->delete();
+        return new ReviewResource($product->reviews);
     }
 }

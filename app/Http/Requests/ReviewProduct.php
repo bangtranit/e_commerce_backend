@@ -13,7 +13,7 @@ class ReviewProduct extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +24,8 @@ class ReviewProduct extends FormRequest
     public function rules()
     {
         return [
-            //
+            'star' => 'required|integer',
+            'review' => 'required|max:1000'
         ];
     }
 }

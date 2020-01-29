@@ -90,7 +90,10 @@ class ProductController extends Controller
      */
     public function update(Request $request, Product $product)
     {
-        $this->productUserCheck($product);
+        if (!$this->productUserCheck($product)){
+            echo "ko trung";
+            return;
+        }
         if ($request->has('description')){
             $request['detail'] = $request->description;
             unset($request['description']);
@@ -117,8 +120,8 @@ class ProductController extends Controller
 
     public function productUserCheck(Product $product){
         if (Auth::id() !== $product->user_id){
-            echo "ko trung";
-            return;
+            return false;
         }
+        return true;
     }
 }
